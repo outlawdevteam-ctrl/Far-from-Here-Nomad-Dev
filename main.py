@@ -11,6 +11,22 @@ Z = float(0.00)
 player_class = "None"
 player_name = "None"
 Hardcore_Mode = False
+attack = False
+party_member1 = "None"
+party_member2 = "None"
+party_member3 = "None"
+level = 0
+exp = 0
+power = 0
+mana = 0
+health = 0
+gold = 0
+NPCL = 1
+NPCP = 2
+NPCC = "None"
+NPCA1 = "None"
+NPCG = 0
+NPCEXP = float(0)
 # For the random generation for the desert
 px1 = random.randint(1, 20)
 px2 = random.randint(1, 20)
@@ -33,38 +49,73 @@ vy2 = random.randint(1, 20)
 vy3 = random.randint(1, 20)
 vy4 = random.randint(1, 20)
 vy5 = random.randint(1, 20)
+
+ntype1 = random.randint(1, 2)
+ncnpc1 = random.randint(1, 5)
+
+if ncnpc1 == 1:
+    rnnpc1 = "Dave"
+
+elif ncnpc1 == 2:
+    rnnpc1 = "Jack"
+
+elif ncnpc1 == 3:
+    rnnpc1 = "Brianna"
+
+elif ncnpc1 == 4:
+    rnnpc1 = "Noah"
+
+elif ncnpc1 == 5:
+    rnnpc1 = "Adam"
+
 # The save feature
-def save_game(filename=f"saveslot{snum}.json"):
-            save_data = {
-                "position":{"x":X, "z":Z},
-                "player_name":player_name,
-                "player_class":player_class,
-                "hardcore_mode":Hardcore_Mode
+def save_game(snum):
+    filename = f"saveslot{snum}.json"
+    save_data = {
+        "position": {"x": X, "z": Z},
+        "player_name": player_name,
+        "player_class": player_class,
+        "hardcore_mode": Hardcore_Mode,
+        "level" : level,
+        "exp" : exp,
+        "power" : power,
+        "mana" : mana,
+        "gold" : gold,
+        "attack1" : attack1
+    }
 
-            }
+    with open(filename, "w") as f:
+        json.dump(save_data, f, indent=4)
 
-            with open(filename, "w")as f:
-                json.dump(save_data, f,indent=4)
-
-            print("Game saved!")
+    print(f"Game saved to slot {snum}!")
 # The loading feature
-def load_game(filename="save.json"):
+def load_game(snum):
+    filename = f"saveslot{snum}.json"
     try:
         with open(filename, "r") as f:
             save_data = json.load(f)
-
 
         X = save_data["position"]["x"]
         Z = save_data["position"]["z"]
         player_name = save_data["player_name"]
         player_class = save_data["player_class"]
         Hardcore_Mode = save_data["hardcore_mode"]
+        level = save_data["level"]
+        exp = save_data["exp"]
+        power = save_data["power"]
+        mana = save_data["mana"]
+        gold = save_data["gold"]
+        attack1 = save_data["attack1"]
 
-        print("Game loaded!")
-        return X, Z, player_class, player_name, Hardcore_Mode
+        print(f"Game loaded from slot {snum}!")
+        return X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1
     
     except FileNotFoundError:
-        print("No save file found!")
+        print(f"No save file found in slot {snum}!")
+        return None
+
+    except json.JSONDecodeError:
+        print(f"Save file in slot {snum} is corrupted!")
         return None
 # The base setup for the NPC variable
 NPC = "None"
@@ -74,7 +125,7 @@ cheats = False
 cheating = "Standared Edition"
 
 print("Far from here")
-print('Alpha 1.7')
+print('Alpha 1.8')
 print("The RPG Text Engine")
 
 while True:
@@ -97,17 +148,17 @@ while True:
             print("Great! Lets get started!")
 
         elif yn == "n" or "N" or "no" or "No":
-            print("Well then, I suppose you are not prepaired for these lands... goodbye brave traviler! Come back another day!")
+            print("Well then, I suppose you are not prepared for these lands... goodbye brave traveler! Come back another day!")
             continue
 
         else:
-            print("Im sorry traviler, I do not understand. Please come back later and give me a strate answer!")
+            print("Im sorry traveler, I do not understand. Please come back later and give me a strate answer!")
             continue
 
         print("Ok, first things first is you're name...")
         player_name = input("What is your name?: ")
         print(f"Ok {player_name}, welcome to the lands!")
-        print("Ok, now, what is you're class? Here are the options availible here! We have, the Knight, the Mage, and the Ranger! Or you can be a Hero!")
+        print("Ok, now, what is you're class? Here are the options available here! We have, the Knight, the Mage, and the Ranger! Or you can be a Hero!")
         print("(The Hero is hard mode!!!)")
         print("1. Knight (A Knight is a class that takes the brunt force of the team, and does the brunt force of the damage.)")
         print("2. Mage (A mage is good for utility and damage. The damage that the mage does is decent, but the mage is better for healing and transportation.)")
@@ -119,21 +170,38 @@ while True:
             if pcon == "1":
                 player_class = "Knight"
                 Hardcore_Mode = False
+                level = 1
+                power = 2
+                health = 15
+                attack1 = "Slash"
                 break
 
             elif pcon == "2":
                 player_class = "Mage"
                 Hardcore_Mode = False
+                level = 1
+                power = 1
+                mana = 5
+                health = 10
+                attack1 = "Fire ball"
                 break
 
             elif pcon == "3":
                 player_class = "Ranger"
                 Hardcore_Mode = False
+                level = 1
+                power = 5
+                health = 10
+                attack1 = "Shoot"
                 break
 
             elif pcon == "4":
                 player_class = "Undifined"
                 Hardcore_Mode = True
+                level = 1
+                power = 1
+                health = 10
+                attack1 = "Puch"
                 break
 
             else:
@@ -142,7 +210,9 @@ while True:
 
         print("Ok, great! Does this look right?")
         print(f"Name: {player_name} Class: {player_class} Hardcore Mode: {Hardcore_Mode}")
-        print("Level: 1 Experience: 0.00 Power: 0")
+        print(f"Level: {level} Experience: {exp} Power: {power} Mana: {mana} Gold: {gold}")
+        print("Attacks")
+        print(f"1. {attack1}")
 
         yn = input("What say you? (y/n): ")
 
@@ -185,15 +255,15 @@ while True:
 
 
     elif option == "3":
-        resault = load_game()
+        snum = int(input("Which slot do you want to load from? "))
+        resault = load_game(snum)
         if resault is not None:
-            X, Z, player_class, player_name, Hardcore_Mode = resault
-            print("Ok, great! Does this look right?")
+            X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1 = resault
             print(f"Name: {player_name} Class: {player_class} Hardcore Mode: {Hardcore_Mode}")
-            print("Level: 1 Experience: 0.00 Power: 0")
-            time.sleep(1)
+            print(f"Level: {level} Exp: {exp} Power: {power} Mana: {mana} Gold: {gold}")
+            print("Attacks")
+            print(f"1. {attack1}")
             break
-        
         else:
             print("Could not load!")
             time.sleep(1)
@@ -211,20 +281,20 @@ if cheats == True:
     print("DX3", px3)
     print("DX4", px4)
     print("DX5", px5)
-    print("DY1", py1)
-    print("DY2", py2)
-    print("DY3", py3)
-    print("DY4", py4)
+    print("DZ1", py1)
+    print("DZ2", py2)
+    print("DZ3", py3)
+    print("DZ4", py4)
     print("VX1", vx1)
     print("VX2", vx2)
     print("VX3", vx3)
     print("VX4", vx4)
     print("VX5", vx5)
-    print("VY1", vy1)
-    print("VY2", vy2)
-    print("VY3", vy3)
-    print("VY4", vy4)
-    print("VY5", vy5)
+    print("VZ1", vy1)
+    print("VZ2", vy2)
+    print("VZ3", vy3)
+    print("VZ4", vy4)
+    print("VZ5", vy5)
     print("Game Started")
 else:
     print("Game Started")
@@ -255,8 +325,41 @@ while True:
         NPC = "Rotisory Chicken_724"
         region = "Villager_Render"
 
+    elif X == vx1 + .02 and vy1 + .01:
+        NPC = rnnpc1
+
     else:
         NPC = "None"
+
+    if attack == False:
+        print("")
+
+    elif attack == True:
+        print(f"Attacking {NPC}")
+        ap = random.randint(1, 2)
+
+        if ap == 1:
+            NPCL = 1
+            NPCP = 2
+            NPCC = "Ranger"
+            NPCA1 = "Shoot"
+            NPCG = 15
+            NPCEXP = float(.25)
+
+        elif ap == 2:
+            NPCL = 1
+            NPCP = 1
+            NPCC = "Knight"
+            NPCA1 = "Slash"
+            NPCG = 15
+            NPCEXP = float(.25)
+
+    print("What do you want to do?")
+    print("1. Attack")
+    print("2. Leave")
+    fight = input("")
+
+
 
 
     if region == "Desert":
@@ -381,30 +484,24 @@ while True:
         print("Commands: help, move, exit, interact, help cheats (Only if cheats are enabled!!!)")
 
     elif action == "load":
-        resault = load_game()
+        snum = int(input("Which slot do you want to load from? "))
+        resault = load_game(snum)
         if resault is not None:
-            X, Z, player_class, player_name, Hardcore_Mode = resault
-            print("Ok, great! Does this look right?")
+            X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1 = resault
             print(f"Name: {player_name} Class: {player_class} Hardcore Mode: {Hardcore_Mode}")
-            print("Level: 1 Experience: 0.00 Power: 0")
-        
+            print(f"Level: {level} Exp: {exp} Power: {power} Mana: {mana} Gold: {gold}")
+            print("Attacks")
+            print(f"1. {attack1}")
         else:
             print("Could not load!")
         time.sleep(1)
     
     elif action == "save":
-        while True:
-            snum = int(input("Please type the slot you want to save"))
-            try:
-                save_game()
-
-            except ValueError:
-                print("Unable to save to that slot! Invalid Value!")
-            
-            save_game()
-            print("Game Saved!")
-            break
-            
+        try:
+            snum = int(input("Please type the slot you want to save to: "))
+            save_game(snum)
+        except ValueError:
+            print("Unable to save to that slot! Invalid value!")
         time.sleep(1)
     
     elif action == "help cheats":
@@ -532,6 +629,14 @@ while True:
         elif NPC == "Joj_ Reference":
             print("Joj_ Reference says: Kono Dio Da! >;) Here you go Cy Cy.")
 
+        elif NPC == rnnpc1:
+            if ntype1 == 1:
+                print("Hello! I am a friendly villager!")
+
+            if ntype1 == 2:
+                print("Lets fight!")
+                attack = True
+
         else:
             print("Nothing to Interact!")
 
@@ -549,6 +654,9 @@ while True:
 
         elif NPC == "Joj_ Reference":
             print("Joj_ Reference says: Kono Dio Da! >;) Here you go Cy Cy.")
+
+        elif NPC == rnnpc1:
+            print("Hello! I am a freindly villager!")
 
         else:
             print("Nothing to Interact!")
