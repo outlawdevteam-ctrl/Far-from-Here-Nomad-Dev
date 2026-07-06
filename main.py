@@ -8,7 +8,7 @@ snum = 1
 # These are where you are in the world!
 X = float(0.00)
 Z = float(0.00)
-player_class = "None"
+hplayer_class = "None"
 player_name = "None"
 Hardcore_Mode = False
 party_member1 = "None"
@@ -21,6 +21,8 @@ power = 0
 mana = 0
 health = 0
 gold = 0
+lnpcc = 1
+base_health = 5
 NPCL = 1
 NPCP = 2
 NPCC = "None"
@@ -49,6 +51,17 @@ vy2 = random.randint(1, 20)
 vy3 = random.randint(1, 20)
 vy4 = random.randint(1, 20)
 vy5 = random.randint(1, 20)
+
+hx1 = random.randint(1, 20)
+hx2 = random.randint(1, 20)
+hx3 = random.randint(1, 20)
+hx4 = random.randint(1, 20)
+hx5 = random.randint(1, 20)
+hy1 = random.randint(1, 20)
+hy2 = random.randint(1, 20)
+hy3 = random.randint(1, 20)
+hy4 = random.randint(1, 20)
+hy5 = random.randint(1, 20)
 
 ntype1 = random.randint(1, 2)
 ncnpc1 = random.randint(1, 5)
@@ -82,7 +95,8 @@ def save_game(snum):
         "mana" : mana,
         "gold" : gold,
         "attack1" : attack1,
-        "health" : health
+        "health" : health,
+        "lnpcc" :lnpcc
     }
 
     with open(filename, "w") as f:
@@ -110,7 +124,7 @@ def load_game(snum):
         health = save_data["health"]
 
         print(f"Game loaded from slot {snum}!")
-        return X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health
+        return X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health, lnpcc
     
     except FileNotFoundError:
         print(f"No save file found in slot {snum}!")
@@ -127,7 +141,7 @@ cheats = False
 cheating = "Standared Edition"
 
 print("Far from here")
-print('Alpha 1.8')
+print('Alpha 1.8.1')
 print("The RPG Text Engine")
 
 while True:
@@ -291,7 +305,7 @@ while True:
         snum = int(input("Which slot do you want to load from? "))
         resault = load_game(snum)
         if resault is not None:
-            X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health = resault
+            X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health, lnpcc = resault
             time.sleep(1)
             print(f"Name: {player_name} Class: {player_class} Hardcore Mode: {Hardcore_Mode}")
             time.sleep(1)
@@ -333,6 +347,16 @@ if cheats == True:
     print("VZ3", vy3)
     print("VZ4", vy4)
     print("VZ5", vy5)
+    print("HX1", hx1)
+    print("HX2", hx2)
+    print("HX3", hx3)
+    print("HX4", hx4)
+    print("HX5", hx5)
+    print("HZ1", hy1)
+    print("HZ2", hy2)
+    print("HZ3", hy3)
+    print("HZ4", hy4)
+    print("HZ5", hy5)
     print("ntype1", ntype1)
     print("Game Started")
 else:
@@ -344,6 +368,12 @@ npcl1z = vy1
 lnpcc = 1
 
 while True:
+
+    if exp == 50:
+        new_level = level + 1
+        level = new_level
+        exp = 0
+
     time.sleep(1.5)
     if attack1 == "Slash":
         damage = 2 * power
@@ -361,8 +391,10 @@ while True:
         attack1 = "Punch"
         damage = 1 * power
 
+    if round(X, 1) == px1 and vx1 or round(X, 1) == px2 and vx2 or round(X, 1) == px3 and vx3 or round(X, 1) == px4 and vx4 or round(X, 1) == px5 and vx5 and round(Z, 1) == py1 and vy1 or round(Z, 1) == py2 and vy2 or round(Z, 1) == py3 and vy3 or round(Z, 1) == py4 and vy4 or round(Z, 1) == py5 and vy5:
+        region = "Desert Village"
     
-    if X == float(600.06) and Z == float(700.07):
+    elif X == float(600.06) and Z == float(700.07):
         region = "Jimbob"
     
     elif round(X, 1) == px1 or round(X, 1) == px2 or round(X, 1) == px3 or round(X, 1) == px4 or round(X, 1) == px5 and round(Z, 1) == py1 or round(Z, 1) == py2 or round(Z, 1) == py3 or round(Z, 1) == py4 or round(Z, 1) == py5:
@@ -407,6 +439,21 @@ while True:
         print("|       #                         |")
         print("|*********************************|")
         print("|*********************************|")
+        print("-----------------------------------")
+
+    elif region == "Desert Village":
+        print("-----------------------------------")
+        print("|        Desert Village           |")
+        print("|                                 |")
+        print("|                                 |")
+        print("|                                 |")
+        print("|                                 |")
+        print("|                                 |")
+        print("|          __________             |")
+        print("|  | #     |********|             |")
+        print("|  --# |   |**|---|*|             |")
+        print("|    #--   |**|  .|*|             |")
+        print("|    #     |**|___|*|             |")
         print("-----------------------------------")
 
     elif region == "Plains":
@@ -511,10 +558,103 @@ while True:
     time.sleep(1)
     print(f"NPC: {NPC}")
     time.sleep(1)
+    monster_spawn = random.randint(1, 10)
+    if monster_spawn == 10:
+        print("You go into combat with Monster!")
+        time.sleep(1)
+        combat_health = health
+        monster_health = base_health
+        attackpre = False
+        while True:
+            print("What do you want to do?")
+            time.sleep(1)
+            print("~~~~~~~~~~~~~~~~")
+            print("| 1Fight 2Magic|")
+            print("|     3Item    |")
+            print("~~~~~~~~~~~~~~~~")
+            time.sleep(1)
+            attackingo = input("Please choose an option (1-3): ")
+            if attackingo == "1":
+                attackpre = True
+
+            elif attackingo == "2":
+                print("No Magic!")
+                continue
+
+            elif attackingo == "3":
+                print("No Items!")
+                continue
+
+            print("")
+            print(f" Name: Monster Health: {monster_health} VS. Name: {player_name} Health: {combat_health}  ")
+            time.sleep(1)
+            print("Monster goes first!")
+            time.sleep(1)
+            print("Monster uses Lazy Punch!")
+            time.sleep(1)
+            print(f"Monter's attack did 1 damage!")
+            time.sleep(1)
+            new_combat_health = combat_health - 1
+            time.sleep(1)
+            combat_health = new_combat_health
+            time.sleep(1)
+            print(f"You are at {combat_health}!")
+            time.sleep(1)
+
+            if attackpre == True:
+                print(f"{player_name} does {attack1}")
+                time.sleep(1)
+                print(f"{player_name}'s attack did {damage} damage!")
+                time.sleep(1)
+                New_monster_health = monster_health - damage
+                time.sleep(1)
+                monster_health = New_monster_health
+                time.sleep(1)
+                print(f"Monsters's health is at {monster_health}.")
+                time.sleep(1)
+
+            if monster_health <= 0:
+                print(f"You have won! You get 1 exp from Monster!")
+                time.sleep(1)
+                new_exp = exp + 1
+                exp = new_exp
+                print(f"You have {exp} Exp!")
+                time.sleep(1)
+                health = combat_health
+                break
+
+
+            if combat_health <= 0:
+                print("You deid! Exiting game!")
+                time.sleep(1.5)
+                exit(1)
+
+            else:
+                continue
+    else:
+        time.sleep(0)
     action = input("What do you want to do? (Say 'help' if you don't know!): ")
     if action == "help":
-        print("Commands: help, move, exit, interact, help cheats (Only if cheats are enabled!!!)")
+        print("Commands: help, move, exit, interact, health, gold, exp, level, mana, power, help cheats (Only if cheats are enabled!!!)")
         time.sleep(3)
+
+    elif action == "health":
+        print(f"Your current health is {health}!")
+
+    elif action == "gold":
+        print(f"You have {gold} gold!")
+
+    elif action == "exp":
+        print(f"You have {exp} exp!")
+
+    elif action == "level":
+        print(f"You are level {level}!")
+
+    elif action == "mana":
+        print(f"You have %{mana}!")
+
+    elif action == "power":
+        print(f"You have the strength of {power}!")
 
     elif action == "load":
         snum = int(input("Which slot do you want to load from? "))
@@ -544,7 +684,7 @@ while True:
     
     elif action == "help cheats":
         if cheats == True:
-            print("Cheat Commands: teleport, help cheats")
+            print("Cheat Commands: teleport, help cheats, create region")
             time.sleep(3)
 
         else:
@@ -554,6 +694,15 @@ while True:
         if cheats == True:
             X = float(input("X Cords: "))
             Z = float(input("Z Cords: "))
+
+        elif cheats == False:
+            print("Invalid Command! Cheats Disabled!")
+
+    elif action == "create region":
+        if cheats == True:
+            region = input("Type region (Even ones that dont exist!): ")
+            rx = int(input("Where in X? (Whole number only!): "))
+            rz = int(input(" Where in Y? (Whole numbers only!): "))
 
         elif cheats == False:
             print("Invalid Command! Cheats Disabled!")
@@ -781,6 +930,11 @@ while True:
                             gold = new_gold
                             print(f"You have {gold} gold!")
                             time.sleep(1)
+                            print("You got 3 Exp!")
+                            new_exp = exp + 3
+                            exp = new_exp
+                            print(f"You have {exp} Exp!")
+                            time.sleep(1)
                             print(f"{NPC}: Until next time {player_name}! Goodbye!")
                             time.sleep(1)
                             print("You can find the NPC again at another village!")
@@ -806,6 +960,8 @@ while True:
                             elif lnpcc == 5:
                                 npcl1x = vx5
                                 npcl1z = vy5
+
+                            health = combat_health
                             break
 
 
@@ -840,7 +996,161 @@ while True:
             print("Joj_ Reference says: Kono Dio Da! >;) Here you go Cy Cy.")
 
         elif NPC == rnnpc1:
-            print("Hello! I am a freindly villager!")
+            if ntype1 == 1:
+                print(f"{NPC}: Hello! I am {NPC}, a friendly villager!")
+
+            if ntype1 == 2:
+                print(f"{NPC}: Lets fight!")
+                print(f"Attacking {NPC}")
+                ap = random.randint(1, 2)
+
+                if ap == 1:
+                    NPCL = 1
+                    NPCP = 3
+                    NPCC = "Ranger"
+                    NPCA1 = "Shoot"
+                    NPCG = 15
+                    NPCEXP = float(.25)
+                    NPCH = 10
+
+
+                elif ap == 2:
+                    NPCL = 1
+                    NPCP = 2
+                    NPCC = "Knight"
+                    NPCA1 = "Slash"
+                    NPCG = 15
+                    NPCEXP = float(.25)
+                    NPCH = 15
+
+
+                if NPCA1 == "Slash":
+                    NPCD = 2 * NPCP
+
+                elif NPCA1 == "Shoot":
+                    NPCD = 2 * NPCP
+
+
+                print("What do you want to do?")
+                print("1. Attack")
+                print("2. Leave")
+                fight = input("Please choose an option. (If you win, he will pay you gold! If you lose, you pay him!) (1-2): ")
+
+                if fight == "2":
+                    wts = random.randint(1, 2)
+
+                    if wts == 1:
+                        print(f"You tell {NPC} that you will fight another time.")
+                        time.sleep(1)
+
+                    elif wts == 2:
+                        print(f"You walk away from the situation.")
+                        time.sleep(1)
+
+                elif fight == "1":
+                    print(f"You go into combat with {NPC}!")
+                    time.sleep(1)
+                    combat_health = health
+                    NPCCH = NPCH
+                    attackpre = False
+                    while True:
+                        print("What do you want to do?")
+                        time.sleep(1)
+                        print("~~~~~~~~~~~~~~~~")
+                        print("| 1Fight 2Magic|")
+                        print("|     3Item    |")
+                        print("~~~~~~~~~~~~~~~~")
+                        time.sleep(1)
+                        attackingo = input("Please choose an option (1-3): ")
+                        if attackingo == "1":
+                            attackpre = True
+
+                        elif attackingo == "2":
+                            print("No Magic!")
+                            continue
+
+                        elif attackingo == "3":
+                            print("No Items!")
+                            continue
+
+                        print(f"")
+                        print(f" Name: {NPC} Health: {NPCCH} VS. Name: {player_name} Health: {combat_health}  ")
+                        time.sleep(1)
+                        print(f"{NPC} goes first!")
+                        time.sleep(1)
+                        print(f"{NPC} uses {NPCA1}!")
+                        time.sleep(1)
+                        print(f"{NPC}'s attack did {NPCD} damage!")
+                        time.sleep(1)
+                        new_combat_health = combat_health - NPCD
+                        time.sleep(1)
+                        combat_health = new_combat_health
+                        time.sleep(1)
+                        print(f"You are at {combat_health}!")
+                        time.sleep(1)
+
+                        if attackpre == True:
+                            print(f"{player_name} does {attack1}")
+                            time.sleep(1)
+                            print(f"{player_name}'s attack did {damage} damage!")
+                            time.sleep(1)
+                            New_NPCCH = NPCCH - damage
+                            time.sleep(1)
+                            NPCCH = New_NPCCH
+                            time.sleep(1)
+                            print(f"{NPC}'s health is at {NPCCH}.")
+                            time.sleep(1)
+
+                        if NPCCH <= 0:
+                            print(f"You have won! You get 3 gold from {NPC}")
+                            time.sleep(1)
+                            new_gold = gold + 3
+                            gold = new_gold
+                            print(f"You have {gold} gold!")
+                            time.sleep(1)
+                            print("You got 3 Exp!")
+                            new_exp = exp + 3
+                            exp = new_exp
+                            print(f"You have {exp} Exp!")
+                            time.sleep(1)
+                            print(f"{NPC}: Until next time {player_name}! Goodbye!")
+                            time.sleep(1)
+                            print("You can find the NPC again at another village!")
+                            time.sleep(1)
+                            nlnpcc = lnpcc + 1
+                            lnpcc = nlnpcc
+                            if lnpcc == 1:
+                                npcl1x = vx1
+                                npcl1z = vy1
+
+                            elif lnpcc == 2:
+                                npcl1x = vx2
+                                npcl1z = vy2
+
+                            elif lnpcc == 3:
+                                npcl1x = vx3
+                                npcl1z = vy3
+
+                            elif lnpcc == 4:
+                                npcl1x = vx4
+                                npcl1z = vy4
+
+                            elif lnpcc == 5:
+                                npcl1x = vx5
+                                npcl1z = vy5
+
+                            health = combat_health
+                            break
+
+
+                        if combat_health <= 0:
+                            print("You deid! Exiting game!")
+                            time.sleep(1.5)
+                            exit(1)
+
+                        else:
+                            continue
+
 
         else:
             print("Nothing to Interact!")
