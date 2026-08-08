@@ -2,6 +2,13 @@
 import time
 import json
 import random
+import pygame
+
+
+pygame.init()
+pygame.mixer.init()
+
+
 # The Region Variable. Just for base setup!
 region = "None"
 snum = 1
@@ -63,8 +70,22 @@ hy3 = random.randint(1, 20)
 hy4 = random.randint(1, 20)
 hy5 = random.randint(1, 20)
 
+
+ix1 = round(random.uniform(0.01, 20.99), 2)
+ix2 = round(random.uniform(0.01, 20.99), 2)
+ix3 = round(random.uniform(0.01, 20.99), 2)
+ix4 = round(random.uniform(0.01, 20.99), 2)
+ix5 = round(random.uniform(0.01, 20.99), 2)
+iy1 = round(random.uniform(0.01, 20.99), 2)
+iy2 = round(random.uniform(0.01, 20.99), 2)
+iy3 = round(random.uniform(0.01, 20.99), 2)
+iy4 = round(random.uniform(0.01, 20.99), 2)
+iy5 = round(random.uniform(0.01, 20.99), 2)
+
 ntype1 = random.randint(1, 2)
 ncnpc1 = random.randint(1, 5)
+
+building = "None"
 
 if ncnpc1 == 1:
     rnnpc1 = "Dave"
@@ -140,8 +161,11 @@ cheats = False
 # Just to fill in space
 cheating = "Standared Edition"
 
+pygame.mixer.music.load("Far from Here Main Theme.mp3")
+pygame.mixer.music.play(-1)
+
 print("Far from here")
-print('Alpha 1.8.1')
+print('Alpha 1.10')
 print("The RPG Text Engine")
 
 while True:
@@ -327,6 +351,9 @@ while True:
         exit(1)
 
 #Before Game Starts
+npcl1x = round(random.uniform(0.01, 20.99), 2)
+npcl1z = round(random.uniform(0.01, 20.99), 2)
+
 if cheats == True:
     print("DX1", px1)
     print("DX2", px2)
@@ -357,13 +384,24 @@ if cheats == True:
     print("HZ3", hy3)
     print("HZ4", hy4)
     print("HZ5", hy5)
+    print("IX1", ix1)
+    print("IX2", ix2)
+    print("IX3", ix3)
+    print("IX4", ix4)
+    print("IX5", ix5)
+    print("IZ1", iy1)
+    print("IZ2", iy2)
+    print("IZ3", iy3)
+    print("IZ4", iy4)
+    print("IZ5", iy5)
     print("ntype1", ntype1)
+    print("npcl1x", npcl1x)
+    print("npcl1z", npcl1z)
     print("Game Started")
 else:
     print("Game Started")
 
-npcl1x = vx1
-npcl1z = vy1
+
 
 lnpcc = 1
 
@@ -391,6 +429,9 @@ while True:
         attack1 = "Punch"
         damage = 1 * power
 
+    if X == ix1 or X == ix2 or X == ix3 or X == ix4 or X == ix5 and Z == iy1 or Z == iy2 or Z == iy3 or Z == iy4 or Z == iy5:
+        building = "Inn"
+
     if round(X, 1) == px1 and vx1 or round(X, 1) == px2 and vx2 or round(X, 1) == px3 and vx3 or round(X, 1) == px4 and vx4 or round(X, 1) == px5 and vx5 and round(Z, 1) == py1 and vy1 or round(Z, 1) == py2 and vy2 or round(Z, 1) == py3 and vy3 or round(Z, 1) == py4 and vy4 or round(Z, 1) == py5 and vy5:
         region = "Desert Village"
     
@@ -405,6 +446,9 @@ while True:
 
     else:
         region = "Plains"
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load("The Plains - Far from Here Theme.mp3")
+        pygame.mixer.music.play(-1)
 
     if X == float(600.06) and Z == float(700.07):
         NPC = "Jimbob"
@@ -416,7 +460,7 @@ while True:
         NPC = "Rotisory Chicken_724"
         region = "Villager_Render"
 
-    elif X == npcl1x + .02 and Z == npcl1z + .01:
+    elif X == npcl1x and Z == npcl1z:
         NPC = rnnpc1
 
     else:
@@ -557,6 +601,7 @@ while True:
     print(f"Z Cords : {Z}")
     time.sleep(1)
     print(f"NPC: {NPC}")
+    print(f"Building: {building}")
     time.sleep(1)
     monster_spawn = random.randint(1, 10)
     if monster_spawn == 10:
@@ -802,13 +847,10 @@ while True:
         time.sleep(1)
         print("Moved successfully!")
 
-    elif action == "interact":
+    elif action == "interact" or action == "e":
         time.sleep(1)
-         
-        if NPC == "None":
-            time.sleep(0)
 
-        elif NPC == "Jimbob":
+        if NPC == "Jimbob":
             print("Jimbob says: die")
 
         elif NPC == "Rotisory Chicken_724":
@@ -973,187 +1015,87 @@ while True:
                         else:
                             continue
 
+        if building == "Inn":
+            print("Innkeeper: Welcome to my Inn! Here are all the services we have to offer!")
+            print("Actions:")
+            print(" 1. Quick Bite (Restores 1 health fast!) (2 Gold)")
+            print(" 2. Full Rest (Restores all health!) (5 Gold)")
+            print(" 3. Shop")
+            print(" 4. Multiplayer Battle")
+            print(" 5. Exit Inn")
+            while True:
+                inn = input("What do you want to do? (1-5): ")
 
-
-
-
-        else:
-            print("Nothing to Interact!")
-
-    elif action == "e":
-        time.sleep(1)
-         
-        if NPC == "None":
-            time.sleep(0)
-
-        elif NPC == "Jimbob":
-            print("Jimbob says: die")
-
-        elif NPC == "Rotisory Chicken_724":
-            print("Rotisory Chicken_724 says: Oh yeah we have to school 15 min later each day.")
-
-        elif NPC == "Joj_ Reference":
-            print("Joj_ Reference says: Kono Dio Da! >;) Here you go Cy Cy.")
-
-        elif NPC == rnnpc1:
-            if ntype1 == 1:
-                print(f"{NPC}: Hello! I am {NPC}, a friendly villager!")
-
-            if ntype1 == 2:
-                print(f"{NPC}: Lets fight!")
-                print(f"Attacking {NPC}")
-                ap = random.randint(1, 2)
-
-                if ap == 1:
-                    NPCL = 1
-                    NPCP = 3
-                    NPCC = "Ranger"
-                    NPCA1 = "Shoot"
-                    NPCG = 15
-                    NPCEXP = float(.25)
-                    NPCH = 10
-
-
-                elif ap == 2:
-                    NPCL = 1
-                    NPCP = 2
-                    NPCC = "Knight"
-                    NPCA1 = "Slash"
-                    NPCG = 15
-                    NPCEXP = float(.25)
-                    NPCH = 15
-
-
-                if NPCA1 == "Slash":
-                    NPCD = 2 * NPCP
-
-                elif NPCA1 == "Shoot":
-                    NPCD = 2 * NPCP
-
-
-                print("What do you want to do?")
-                print("1. Attack")
-                print("2. Leave")
-                fight = input("Please choose an option. (If you win, he will pay you gold! If you lose, you pay him!) (1-2): ")
-
-                if fight == "2":
-                    wts = random.randint(1, 2)
-
-                    if wts == 1:
-                        print(f"You tell {NPC} that you will fight another time.")
-                        time.sleep(1)
-
-                    elif wts == 2:
-                        print(f"You walk away from the situation.")
-                        time.sleep(1)
-
-                elif fight == "1":
-                    print(f"You go into combat with {NPC}!")
-                    time.sleep(1)
-                    combat_health = health
-                    NPCCH = NPCH
-                    attackpre = False
-                    while True:
-                        print("What do you want to do?")
-                        time.sleep(1)
-                        print("~~~~~~~~~~~~~~~~")
-                        print("| 1Fight 2Magic|")
-                        print("|     3Item    |")
-                        print("~~~~~~~~~~~~~~~~")
-                        time.sleep(1)
-                        attackingo = input("Please choose an option (1-3): ")
-                        if attackingo == "1":
-                            attackpre = True
-
-                        elif attackingo == "2":
-                            print("No Magic!")
-                            continue
-
-                        elif attackingo == "3":
-                            print("No Items!")
-                            continue
-
-                        print(f"")
-                        print(f" Name: {NPC} Health: {NPCCH} VS. Name: {player_name} Health: {combat_health}  ")
-                        time.sleep(1)
-                        print(f"{NPC} goes first!")
-                        time.sleep(1)
-                        print(f"{NPC} uses {NPCA1}!")
-                        time.sleep(1)
-                        print(f"{NPC}'s attack did {NPCD} damage!")
-                        time.sleep(1)
-                        new_combat_health = combat_health - NPCD
-                        time.sleep(1)
-                        combat_health = new_combat_health
-                        time.sleep(1)
-                        print(f"You are at {combat_health}!")
-                        time.sleep(1)
-
-                        if attackpre == True:
-                            print(f"{player_name} does {attack1}")
-                            time.sleep(1)
-                            print(f"{player_name}'s attack did {damage} damage!")
-                            time.sleep(1)
-                            New_NPCCH = NPCCH - damage
-                            time.sleep(1)
-                            NPCCH = New_NPCCH
-                            time.sleep(1)
-                            print(f"{NPC}'s health is at {NPCCH}.")
-                            time.sleep(1)
-
-                        if NPCCH <= 0:
-                            print(f"You have won! You get 3 gold from {NPC}")
-                            time.sleep(1)
-                            new_gold = gold + 3
-                            gold = new_gold
-                            print(f"You have {gold} gold!")
-                            time.sleep(1)
-                            print("You got 3 Exp!")
-                            new_exp = exp + 3
-                            exp = new_exp
-                            print(f"You have {exp} Exp!")
-                            time.sleep(1)
-                            print(f"{NPC}: Until next time {player_name}! Goodbye!")
-                            time.sleep(1)
-                            print("You can find the NPC again at another village!")
-                            time.sleep(1)
-                            nlnpcc = lnpcc + 1
-                            lnpcc = nlnpcc
-                            if lnpcc == 1:
-                                npcl1x = vx1
-                                npcl1z = vy1
-
-                            elif lnpcc == 2:
-                                npcl1x = vx2
-                                npcl1z = vy2
-
-                            elif lnpcc == 3:
-                                npcl1x = vx3
-                                npcl1z = vy3
-
-                            elif lnpcc == 4:
-                                npcl1x = vx4
-                                npcl1z = vy4
-
-                            elif lnpcc == 5:
-                                npcl1x = vx5
-                                npcl1z = vy5
-
-                            health = combat_health
-                            break
-
-
-                        if combat_health <= 0:
-                            print("You deid! Exiting game!")
-                            time.sleep(1.5)
-                            exit(1)
+                if inn == "1":
+                    if gold <= 0:
+                        print("You dont have enough gold!")
+                        continue
+                    else:
+                        new_gold = gold - 2
+                        gold = new_gold
+                        if player_class == "Knight":
+                            if health >= 15:
+                                time.sleep(0)
+                            else:
+                                new_health = health + 1
+                                health = new_health
 
                         else:
-                            continue
+                            if health >= 10:
+                                time.sleep(0)
+                            else:
+                                new_health = health + 1
+                                health = new_health
+                        print("Innkeeper: Can I do anything else?")
+                        continue
+
+                elif inn == "2":
+                    if gold <= 0:
+                        print("You dont have enough gold!")
+                        continue
+                    else:
+                        new_gold = gold - 5
+                        gold = new_gold
+                        if player_class == "Knight":
+                            if health >= 15:
+                                time.sleep(0)
+                            else:
+                                new_health = health + 5
+                                health = new_health
+
+                        else:
+                            if health >= 10:
+                                time.sleep(0)
+                            else:
+                                new_health = health + 5
+                                health = new_health
+
+                        print("Innkeeper: Can I do anything else?")
+                        continue
+
+                elif inn == "3":
+                    print("Innkeeper: The shop is curently closed.")
+                    print("Innkeeper: Can I do anything else?")
+                    continue
+
+                elif inn == "4":
+                    print("Innkeeper: This feature is curently closed.")
+                    print("Innkeeper: Can I do anything else?")
+                    continue
+
+                elif inn == "5":
+                    print("Innkeeper: Comeback again!")
+                    break
+
+
+
+
 
 
         else:
             print("Nothing to Interact!")
+
+    
 
 
     else:
