@@ -82,6 +82,8 @@ iy3 = round(random.uniform(0.01, 20.99), 2)
 iy4 = round(random.uniform(0.01, 20.99), 2)
 iy5 = round(random.uniform(0.01, 20.99), 2)
 
+seed = f"{px1:02d}{py1:02d}{px2:02d}{py2:02d}{px3:02d}{py3:02d}{px4:02d}{py4:02d}{px5:02d}{py5:02d}{vx1:02d}{vy1:02d}{vx2:02d}{vy2:02d}{vx3:02d}{vy3:02d}{vx4:02d}{vy4:02d}{vx5:02d}{vy5:02d}{ix1:05.2f}{iy1:05.2f}{ix2:05.2f}{iy2:05.2f}{ix3:05.2f}{iy3:05.2f}{ix4:05.2f}{iy4:05.2f}{ix5:05.2f}{iy5:05.2f}"
+
 ntype1 = random.randint(1, 2)
 ncnpc1 = random.randint(1, 5)
 
@@ -102,6 +104,8 @@ elif ncnpc1 == 4:
 elif ncnpc1 == 5:
     rnnpc1 = "Adam"
 
+num_as_string = "Nan"
+
 # The save feature
 def save_game(snum):
     filename = f"saveslot{snum}.json"
@@ -117,7 +121,8 @@ def save_game(snum):
         "gold" : gold,
         "attack1" : attack1,
         "health" : health,
-        "lnpcc" :lnpcc
+        "lnpcc" : lnpcc,
+        "seed" : seed
     }
 
     with open(filename, "w") as f:
@@ -143,9 +148,11 @@ def load_game(snum):
         gold = save_data["gold"]
         attack1 = save_data["attack1"]
         health = save_data["health"]
+        lnpcc = save_data["lnpcc"]
+        seed = save_data["seed"]
 
         print(f"Game loaded from slot {snum}!")
-        return X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health, lnpcc
+        return X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health, lnpcc, seed
     
     except FileNotFoundError:
         print(f"No save file found in slot {snum}!")
@@ -154,6 +161,76 @@ def load_game(snum):
     except json.JSONDecodeError:
         print(f"Save file in slot {snum} is corrupted!")
         return None
+
+def load_seed(ns):
+    try:
+        num_as_string = str(ns)
+        px1 = num_as_string[0] + num_as_string[1]
+        px1 = int(px1)
+        py1 = num_as_string[2] + num_as_string[3]
+        py1 = int(py1)
+        px2 = num_as_string[4] + num_as_string[5]
+        px2 = int(px2)
+        py2 = num_as_string[6] + num_as_string[7]
+        py2 = int(py2)
+        px3 = num_as_string[8] + num_as_string[9]
+        px3 = int(px3)
+        py3 = num_as_string[10] + num_as_string[11]
+        py3 = int(py3)
+        px4 = num_as_string[12] + num_as_string[13]
+        px4 = int(px4)
+        py4 = num_as_string[14] + num_as_string[15]
+        py4 = int(py4)
+        px5 = num_as_string[16] + num_as_string[17]
+        px5 = int(px5)
+        py5 = num_as_string[18] + num_as_string[19]
+        py5 = int(py5)
+        vx1 = num_as_string[20] + num_as_string[21]
+        vx1 = int(vx1)
+        vy1 = num_as_string[22] + num_as_string[23]
+        vy1 = int(vy1)
+        vx2 = num_as_string[24] + num_as_string[25]
+        vx2 = int(vx2)
+        vy2 = num_as_string[26] + num_as_string[27]
+        vy2 = int(vy2)
+        vx3 = num_as_string[28] + num_as_string[29]
+        vx3 = int(vx3)
+        vy3 = num_as_string[30] + num_as_string[31]
+        vy3 = int(vy3)
+        vx4 = num_as_string[32] + num_as_string[33]
+        vx4 = int(vx4)
+        vy4 = num_as_string[34] + num_as_string[35]
+        vy4 = int(vy4)
+        vx5 = num_as_string[36] + num_as_string[37]
+        vx5 = int(vx5)
+        vy5 = num_as_string[38] + num_as_string[39]
+        vy5 = int(vy5)
+        ix1 = num_as_string[40] + num_as_string[41] + num_as_string[42] + num_as_string[43] + num_as_string[44]
+        ix1 = float(ix1)
+        iy1 = num_as_string[45] + num_as_string[46] + num_as_string[47] + num_as_string[48] + num_as_string[49]
+        iy1 = float(iy1)
+        ix2 = num_as_string[50] + num_as_string[51] + num_as_string[52] + num_as_string[53] + num_as_string[54]
+        ix2 = float(ix2)
+        iy2 = num_as_string[55] + num_as_string[56] + num_as_string[57] + num_as_string[58] + num_as_string[59]
+        iy2 = float(iy2)
+        ix3 = num_as_string[60] + num_as_string[61] + num_as_string[62] + num_as_string[63] + num_as_string[64]
+        ix3 = float(ix3)
+        iy3 = num_as_string[65] + num_as_string[66] + num_as_string[67] + num_as_string[68] + num_as_string[69]
+        iy3 = float(iy3)
+        ix4 = num_as_string[70] + num_as_string[71] + num_as_string[72] + num_as_string[73] + num_as_string[74]
+        ix4 = float(ix4)
+        iy4 = num_as_string[75] + num_as_string[76] + num_as_string[77] + num_as_string[78] + num_as_string[79]
+        iy4 = float(iy4)
+        ix5 = num_as_string[80] + num_as_string[81] + num_as_string[82] + num_as_string[83] + num_as_string[84]
+        ix5 = float(ix5)
+        iy5 = num_as_string[85] + num_as_string[86] + num_as_string[87] + num_as_string[88] + num_as_string[89]
+        iy5 = float(iy5)
+        return px1, py1, px2, py2, px3, py3, px4, py4, px5, py5, vx1, vy1, vx2, vy2, vx3, vy3, vx4, vy4, vx5, vy5, ix1, iy1, ix2, iy2, ix3, iy3, ix4, iy4, ix5, iy5
+    except IndexError:
+        print("Unable to load seed: ")
+        return None
+
+
 # The base setup for the NPC variable
 NPC = "None"
 # Cheats settings
@@ -163,6 +240,8 @@ cheating = "Standared Edition"
 
 pygame.mixer.music.load("Far from Here Main Theme.mp3")
 pygame.mixer.music.play(-1)
+
+sc = False
 
 print("Far from here")
 print('Alpha 1.10')
@@ -184,10 +263,10 @@ while True:
         print("In order to venture into these lands, can you please answer these few questions?")
         yn = input("What say you? (y/n): ")
         
-        if yn == "y" or "Y" or "yes" or "Yes":
+        if yn == "y":
             print("Great! Lets get started!")
 
-        elif yn == "n" or "N" or "no" or "No":
+        elif yn == "n":
             print("Well then, I suppose you are not prepared for these lands... goodbye brave traveler! Come back another day!")
             continue
 
@@ -264,10 +343,10 @@ while True:
 
         yn = input("What say you? (y/n): ")
 
-        if yn == "y" or "Y" or "yes" or "Yes":
+        if yn == "y":
             print("Great! Lets get going!")
 
-        elif yn == "n" or "N" or "no" or "No":
+        elif yn == "n":
             print("Oh, sorry. I suppose we shall restart at the menus! :(")
             continue
 
@@ -283,9 +362,10 @@ while True:
         print("Opening Settings...")
         time.sleep(1)
         print("Please choose an option to edit:")
-        print("  1. Cheats ")
+        print("  1. Cheats")
         print(f"  2. {rnnpc1} Talk/Attack Setting")
-        print("  3. Back")
+        print("  3. Seed")
+        print("  4. Back")
         SE = input("Please choose an option to edit (1-3): ")
 
         if SE == "1":
@@ -323,13 +403,25 @@ while True:
             except ValueError:
                 print("Could not change! Value Error!")
 
+        elif SE == "3":
+            if not cheats:
+                print("Cant change! Cheats are off!")
+            else:
+                seed = input("Please enter you're seed: ")
+                if seed == "":
+                    print("Cancaling custom seed.")
+                else:
+                    sc = True
+                
+
 
 
     elif option == "3":
         snum = int(input("Which slot do you want to load from? "))
         resault = load_game(snum)
         if resault is not None:
-            X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health, lnpcc = resault
+            X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health, lnpcc, seed = resault
+            sc = True
             time.sleep(1)
             print(f"Name: {player_name} Class: {player_class} Hardcore Mode: {Hardcore_Mode}")
             time.sleep(1)
@@ -349,6 +441,16 @@ while True:
         print("Exiting...")
         time.sleep(1)
         exit(1)
+
+if sc:
+    result = load_seed(seed)
+    if result is not None:
+        (
+            px1, py1, px2, py2, px3, py3, px4, py4, px5, py5,
+            vx1, vy1, vx2, vy2, vx3, vy3, vx4, vy4, vx5, vy5,
+            ix1, iy1, ix2, iy2, ix3, iy3, ix4, iy4, ix5, iy5
+        ) = result
+        print("World generation seed applied successfully!")
 
 #Before Game Starts
 npcl1x = round(random.uniform(0.01, 20.99), 2)
@@ -403,9 +505,17 @@ else:
 
 
 
+
+
 lnpcc = 1
+pm = False
 
 while True:
+
+    seed = f"{px1:02d}{py1:02d}{px2:02d}{py2:02d}{px3:02d}{py3:02d}{px4:02d}{py4:02d}{px5:02d}{py5:02d}{vx1:02d}{vy1:02d}{vx2:02d}{vy2:02d}{vx3:02d}{vy3:02d}{vx4:02d}{vy4:02d}{vx5:02d}{vy5:02d}{ix1:05.2f}{iy1:05.2f}{ix2:05.2f}{iy2:05.2f}{ix3:05.2f}{iy3:05.2f}{ix4:05.2f}{iy4:05.2f}{ix5:05.2f}{iy5:05.2f}"
+
+    x_whole = int(X)
+    z_whole = int(Z)
 
     if exp == 50:
         new_level = level + 1
@@ -432,23 +542,28 @@ while True:
     if X == ix1 or X == ix2 or X == ix3 or X == ix4 or X == ix5 and Z == iy1 or Z == iy2 or Z == iy3 or Z == iy4 or Z == iy5:
         building = "Inn"
 
-    if round(X, 1) == px1 and vx1 or round(X, 1) == px2 and vx2 or round(X, 1) == px3 and vx3 or round(X, 1) == px4 and vx4 or round(X, 1) == px5 and vx5 and round(Z, 1) == py1 and vy1 or round(Z, 1) == py2 and vy2 or round(Z, 1) == py3 and vy3 or round(Z, 1) == py4 and vy4 or round(Z, 1) == py5 and vy5:
+    else:
+        building = "None"
+
+    if round(X, 1) == px1 and vx1 and round(Z, 1) == py1 and vy1 or round(X, 1) == px2 and vx2 and round(Z, 1) == py2 and vy2 or round(X, 1) == px3 and vx3 and round(Z, 1) == py3 and vy3 or round(X, 1) == px4 and vx4 and round(Z, 1) == py4 and vy4 or round(X, 1) == px5 and vx5 and round(Z, 1) == py5 and vy5:
         region = "Desert Village"
     
     elif X == float(600.06) and Z == float(700.07):
         region = "Jimbob"
     
-    elif round(X, 1) == px1 or round(X, 1) == px2 or round(X, 1) == px3 or round(X, 1) == px4 or round(X, 1) == px5 and round(Z, 1) == py1 or round(Z, 1) == py2 or round(Z, 1) == py3 or round(Z, 1) == py4 or round(Z, 1) == py5:
+    elif round(X, 1) == px1 and round(Z, 1) == py1 or round(X, 1) == px2 and round(Z, 1) == py2 or round(X, 1) == px3 and round(Z, 1) == py3 or round(X, 1) == px4 and round(Z, 1) == py4 or round(X, 1) == px5 and round(Z, 1) == py5:
         region = "Desert"
 
-    elif round(X, 1) == vx1 or round(X, 1) == vx2 or round(X, 1) == vx3 or round(X, 1) == vx4 or round(X, 1) == vx5 and round(Z, 1) == vy1 or round(Z, 1) == vy2 or round(Z, 1) == vy3 or round(Z, 1) == vy4 or round(Z, 1) == vy5:
+    elif round(X, 1) == vx1 and round(Z, 1) == vy1 or round(X, 1) == vx2 and round(Z, 1) == vy2 or round(X, 1) == vx3 and round(Z, 1) == vy3 or round(X, 1) == vx4 and round(Z, 1) == vy4 or round(X, 1) == vx5 and round(Z, 1) == vy5:
         region = "Village"
 
     else:
         region = "Plains"
-        pygame.mixer.music.stop()
-        pygame.mixer.music.load("The Plains - Far from Here Theme.mp3")
-        pygame.mixer.music.play(-1)
+        if not pm:
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load("The Plains - Far from Here Theme.mp3")
+            pygame.mixer.music.play(-1)
+            pm = True
 
     if X == float(600.06) and Z == float(700.07):
         NPC = "Jimbob"
@@ -686,6 +801,9 @@ while True:
     elif action == "health":
         print(f"Your current health is {health}!")
 
+    elif action == "seed":
+        print(f"Seed: {seed}")
+
     elif action == "gold":
         print(f"You have {gold} gold!")
 
@@ -705,7 +823,7 @@ while True:
         snum = int(input("Which slot do you want to load from? "))
         resault = load_game(snum)
         if resault is not None:
-            X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health = resault
+            X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health, lnpcc, seed = resault
             time.sleep(1)
             print(f"Name: {player_name} Class: {player_class} Hardcore Mode: {Hardcore_Mode}")
             time.sleep(1)
@@ -788,7 +906,7 @@ while True:
             #print("**********************************************")
 
 
-    elif action == "exit":
+    elif action == "exit" or action == "quit":
         print("Exiting the game! This will NOT save!!!")
         time.sleep(1.5)
         exit(1)
