@@ -3,6 +3,49 @@ import time
 import json
 import random
 import pygame
+import socket
+
+
+
+class NetworkBattle:
+    def __init__(self):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.conn = None
+        self.is_host = False
+
+    def host_match(self, port=5555):
+        """Binds to 0.0.0.0 to listen on both same-computer loopback and local Wi-Fi."""
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.sock.bind(('0.0.0.0', port))
+        self.sock.listen(1)
+        print("\nWaiting for an opponent to connect...")
+        self.conn, addr = self.sock.accept()
+        self.is_host = True
+        print(f"Opponent connected from {addr[0]}!")
+
+    def join_match(self, host_ip='127.0.0.1', port=5555):
+        """Connects to the host using 127.0.0.1 (same PC) or LAN IP (Wi-Fi)."""
+        self.sock.connect((host_ip, port))
+        self.conn = self.sock
+        self.is_host = False
+        print(f"Successfully connected to host at {host_ip}!")
+
+    def send_action(self, data):
+        """Encodes player move data and sends it over the socket."""
+        payload = json.dumps(data)
+        self.conn.sendall(payload.encode('utf-8'))
+
+    def receive_action(self):
+        """Blocks until the opponent sends their action."""
+        data = self.conn.recv(1024).decode('utf-8')
+        if not data:
+            return None
+        return json.loads(data)
+
+    def close(self):
+        if self.conn:
+            self.conn.close()
+        self.sock.close()
 
 
 pygame.init()
@@ -36,6 +79,11 @@ NPCC = "None"
 NPCA1 = "None"
 NPCG = 0
 NPCEXP = float(0)
+inventory = [0, 0, 0, 0]
+item = "Empty"
+music_volume = 1
+cheats = False
+pygame.mixer.music.set_volume(music_volume)
 # For the random generation for the desert
 px1 = random.randint(1, 20)
 px2 = random.randint(1, 20)
@@ -122,7 +170,8 @@ def save_game(snum):
         "attack1" : attack1,
         "health" : health,
         "lnpcc" : lnpcc,
-        "seed" : seed
+        "seed" : seed,
+        "inventory" : inventory
     }
 
     with open(filename, "w") as f:
@@ -150,9 +199,10 @@ def load_game(snum):
         health = save_data["health"]
         lnpcc = save_data["lnpcc"]
         seed = save_data["seed"]
+        inventory = save_data["inventory"]
 
         print(f"Game loaded from slot {snum}!")
-        return X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health, lnpcc, seed
+        return X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health, lnpcc, seed, inventory
     
     except FileNotFoundError:
         print(f"No save file found in slot {snum}!")
@@ -161,6 +211,39 @@ def load_game(snum):
     except json.JSONDecodeError:
         print(f"Save file in slot {snum} is corrupted!")
         return None
+
+def load_config():
+    filename = f"config.json"
+    try:
+        with open(filename, "r") as f:
+            save_data = json.load(f)
+
+        cheats = save_data["cheats"],
+        music_volume = save_data["music_volume"]
+        return cheats, music_volume
+
+
+    
+    except FileNotFoundError:
+        print(f"No save file found in slot {snum}!")
+        return None
+
+    except json.JSONDecodeError:
+        print(f"Save file in slot {snum} is corrupted!")
+        return None
+
+
+
+
+def create_config():
+    filename = f"config.json"
+    save_data = {
+        "cheats": cheats,
+        "music_volume": .5,
+    }
+
+    with open(filename, "w") as f:
+        json.dump(save_data, f, indent=4)
 
 def load_seed(ns):
     try:
@@ -230,13 +313,49 @@ def load_seed(ns):
         print("Unable to load seed: ")
         return None
 
+def inventory_name_transfer(n):
+    if n == 0:
+        item = "Empty"
+
+    elif n == 1:
+        item = "Hero's Letter"
+
+    elif n == 2:
+        item == "Potion"
+
+    else:
+        item = "Empty"
+
+    return item
+
+
+result = load_config()
+if not result == None:
+    cheats, music_volume = result
+    pygame.mixer.music.set_volume(music_volume)
+    cheats = cheats[0]
+
+else:
+    create_config()
+    result = load_config()
+    cheats, music_volume = result
+    pygame.mixer.music.set_volume(music_volume)
+    cheats = cheats[0]
+
+
+
+
+
+
+
 
 # The base setup for the NPC variable
 NPC = "None"
-# Cheats settings
-cheats = False
 # Just to fill in space
-cheating = "Standared Edition"
+if not cheats == True:
+    cheating = "Standared Edition"
+else:
+    cheating = "Cheating Enabled!"
 
 pygame.mixer.music.load("Far from Here Main Theme.mp3")
 pygame.mixer.music.play(-1)
@@ -244,7 +363,7 @@ pygame.mixer.music.play(-1)
 sc = False
 
 print("Far from here")
-print('Alpha 1.10')
+print('Alpha 1.11')
 print("The RPG Text Engine")
 
 while True:
@@ -323,12 +442,14 @@ while True:
                 level = 1
                 power = 1
                 health = 10
-                attack1 = "Puch"
+                attack1 = "Punch"
                 break
 
             else:
                 print("Sorry, that's not an option. Try again!")
                 continue
+
+        inventory[0] = 1
 
         print("Ok, great! Does this look right?")
         time.sleep(1)
@@ -340,6 +461,18 @@ while True:
         time.sleep(1)
         print(f"1. {attack1}")
         time.sleep(1)
+        print("Inventory")
+        time.sleep(1)
+        rn = 0
+        while True:
+            result = inventory_name_transfer(inventory[rn])
+            print(f"{result}")
+            time.sleep(1)
+            if not rn == 3:
+                rn = rn + 1
+                continue
+            else:
+                break
 
         yn = input("What say you? (y/n): ")
 
@@ -376,7 +509,7 @@ while True:
             
             if cheatss == "1":
                 cheats = False
-                cheating = ""
+                cheating = "Standared Edition"
 
             elif cheatss == "2":
                 cheats = True
@@ -420,7 +553,7 @@ while True:
         snum = int(input("Which slot do you want to load from? "))
         resault = load_game(snum)
         if resault is not None:
-            X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health, lnpcc, seed = resault
+            X, Z, player_name, player_class, Hardcore_Mode, level, exp, power, mana, gold, attack1, health, lnpcc, seed, inventory = resault
             sc = True
             time.sleep(1)
             print(f"Name: {player_name} Class: {player_class} Hardcore Mode: {Hardcore_Mode}")
@@ -431,6 +564,18 @@ while True:
             time.sleep(1)
             print(f"1. {attack1}")
             time.sleep(1)
+            print("Inventory")
+            time.sleep(1)
+            rn = 0
+            while True:
+                result = inventory_name_transfer(inventory[rn])
+                print(f"{result}")
+                time.sleep(1)
+                if not rn == 3:
+                    rn = rn + 1
+                    continue
+                else:
+                    break
             break
         else:
             print("Could not load!")
@@ -439,6 +584,7 @@ while True:
 
     elif option == "4":
         print("Exiting...")
+        create_config()
         time.sleep(1)
         exit(1)
 
@@ -466,6 +612,7 @@ if cheats == True:
     print("DZ2", py2)
     print("DZ3", py3)
     print("DZ4", py4)
+    print("DZ5", py5)
     print("VX1", vx1)
     print("VX2", vx2)
     print("VX3", vx3)
@@ -503,14 +650,56 @@ if cheats == True:
 else:
     print("Game Started")
 
+def add_item(num):
+    requested_item = inventory_name_transfer(num)
+    if requested_item == "Empty":
+        time.sleep(0)
+
+    elif requested_item == "Hero's Letter":
+        rn = 0
+        while True:
+            if not rn == 3:
+                if inventory[rn] == 0:
+                    inventory[rn] = 1
+                    break
+
+                else:
+                    rn = rn + 1
+                    continue
+
+            else:
+                break
+
+    elif requested_item == "Potion":
+        rn = 0
+        while True:
+            if not rn == 3:
+                if inventory[rn] == 0:
+                    inventory[rn] = 2
+                    break
+
+                else:
+                    rn = rn + 1
+                    continue
+
+            else:
+                break
+
+    return inventory
+
+            
+
+
 
 
 
 
 lnpcc = 1
 pm = False
+dm = False
 
 while True:
+    pygame.mixer.music.set_volume(music_volume)
 
     seed = f"{px1:02d}{py1:02d}{px2:02d}{py2:02d}{px3:02d}{py3:02d}{px4:02d}{py4:02d}{px5:02d}{py5:02d}{vx1:02d}{vy1:02d}{vx2:02d}{vy2:02d}{vx3:02d}{vy3:02d}{vx4:02d}{vy4:02d}{vx5:02d}{vy5:02d}{ix1:05.2f}{iy1:05.2f}{ix2:05.2f}{iy2:05.2f}{ix3:05.2f}{iy3:05.2f}{ix4:05.2f}{iy4:05.2f}{ix5:05.2f}{iy5:05.2f}"
 
@@ -529,7 +718,7 @@ while True:
     elif attack1 == "Fire ball":
         damage = 2 * power
 
-    elif attack1 == "Puch":
+    elif attack1 == "Punch":
         damage = 1 * power
 
     elif attack1 == "Shoot":
@@ -553,6 +742,12 @@ while True:
     
     elif round(X, 1) == px1 and round(Z, 1) == py1 or round(X, 1) == px2 and round(Z, 1) == py2 or round(X, 1) == px3 and round(Z, 1) == py3 or round(X, 1) == px4 and round(Z, 1) == py4 or round(X, 1) == px5 and round(Z, 1) == py5:
         region = "Desert"
+        if not dm:
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load("The Desert - Far from Here Theme.mp3")
+            pygame.mixer.music.play(-1)
+            dm = True
+        
 
     elif round(X, 1) == vx1 and round(Z, 1) == vy1 or round(X, 1) == vx2 and round(Z, 1) == vy2 or round(X, 1) == vx3 and round(Z, 1) == vy3 or round(X, 1) == vx4 and round(Z, 1) == vy4 or round(X, 1) == vx5 and round(Z, 1) == vy5:
         region = "Village"
@@ -781,7 +976,12 @@ while True:
                 print(f"You have {exp} Exp!")
                 time.sleep(1)
                 health = combat_health
-                break
+                lootchance = random.randint(0, 1)
+                if lootchance == 0:
+                    time.sleep(0)
+                elif lootchance == 1:
+                    inventory = add_item(2)
+                    print("You got a potion!")
 
 
             if combat_health <= 0:
@@ -833,11 +1033,22 @@ while True:
             time.sleep(1)
             print(f"1. {attack1}")
             time.sleep(1)
+            rn = 0
+            while True:
+                result = inventory_name_transfer(inventory[rn])
+                print(f"{result}")
+                time.sleep(1)
+                if not rn == 3:
+                    rn = rn + 1
+                    continue
+                else:
+                    break
         else:
             print("Could not load!")
         time.sleep(1)
     
     elif action == "save":
+        create_config()
         try:
             snum = int(input("Please type the slot you want to save to: "))
             save_game(snum)
@@ -908,6 +1119,7 @@ while True:
 
     elif action == "exit" or action == "quit":
         print("Exiting the game! This will NOT save!!!")
+        create_config()
         time.sleep(1.5)
         exit(1)
 
@@ -1197,8 +1409,68 @@ while True:
                     continue
 
                 elif inn == "4":
-                    print("Innkeeper: This feature is curently closed.")
-                    print("Innkeeper: Can I do anything else?")
+                    print("--- Multiplayer Battle Arena ---")
+                    print("1. Host Match")
+                    print("2. Join Match")
+                    net_choice = input("Select an option (1-2): ")
+    
+                    net = NetworkBattle()
+    
+                    if net_choice == "1":
+                        net.host_match()
+                    elif net_choice == "2":
+                        target_ip = input("Enter Host IP (Press Enter for same PC '127.0.0.1'): ")
+                    if not target_ip.strip():
+                        target_ip = "127.0.0.1"
+                        net.join_match(host_ip=target_ip)
+                    else:
+                        print("Invalid option!")
+                        continue
+
+
+                    my_combat_data = {
+                        "name": player_name,
+                        "health": health,
+                        "power": power,
+                        "attack": attack1,
+                        "damage": damage
+                    }
+                    net.send_action(my_combat_data)
+                    opponent_data = net.receive_action()
+
+                    print(f"\nBattle Started! {my_combat_data['name']} VS {opponent_data['name']}")
+    
+                    opp_health = opponent_data['health']
+                    my_health = health
+
+                    my_turn = net.is_host
+
+                    while my_health > 0 and opp_health > 0:
+                        if my_turn:
+                            print(f"\n[YOUR TURN] Your HP: {my_health} | {opponent_data['name']} HP: {opp_health}")
+                            input(f"Press Enter to perform {attack1} (Deals {damage} DMG)...")
+            
+                            net.send_action({"action": "attack", "damage": damage})
+                            opp_health -= damage
+                            print(f"You hit {opponent_data['name']} for {damage} damage!")
+                            my_turn = False
+                        else:
+                            print(f"\n[OPPONENT'S TURN] Waiting for {opponent_data['name']} to move...")
+                            incoming = net.receive_action()
+            
+                            if incoming.get("action") == "attack":
+                                incoming_dmg = incoming["damage"]
+                                my_health -= incoming_dmg
+                                print(f"{opponent_data['name']} hit you for {incoming_dmg} damage!")
+                            my_turn = True
+
+                    if my_health <= 0:
+                        print("\nYou were defeated in battle!")
+                    else:
+                        print("\nVictory! You defeated your opponent!")
+
+                    health = max(1, my_health)  # Preserve remaining HP
+                    net.close()
                     continue
 
                 elif inn == "5":
